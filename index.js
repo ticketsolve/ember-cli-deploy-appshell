@@ -55,7 +55,7 @@ module.exports = {
 
       buildBootLoader(context) {
         let distDir = this.readConfig('distDir');
-        fs.writeFileSync(path.join(distDir, 'bootloader.js'), this.writeBootloader(modulePrefix()));
+        fs.writeFileSync(path.join(distDir, 'bootloader.js'), this.writeBootloader());
         if (context.distFiles) {
           context.distFiles.push('bootloader.js');
         }
@@ -101,10 +101,10 @@ module.exports = {
         ).join("\n");
       },
 
-      writeBootloader(modulePrefix) {
+      writeBootloader() {
         let loader = fs.readFileSync(require.resolve('loader.js'), 'utf8');
         let src = fs.readFileSync(path.join(__dirname, 'lib', 'bootloader.js'), 'utf8')
-          .replace(/MODULE_PREFIX/g, modulePrefix)
+          .replace(/MODULE_PREFIX/g, modulePrefix())
           .replace(/APPSHELL_PATH/g, assetsURL());
         return uglify.minify(loader + src, { fromString: true, mangle: true, compress: true }).code;
       }
