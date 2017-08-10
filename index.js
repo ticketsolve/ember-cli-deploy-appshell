@@ -65,15 +65,10 @@ module.exports = {
         let distDir = this.readConfig('distDir');
         let files = this.readConfig('distFiles');
         let indexHTML = fs.readFileSync(path.join(distDir, 'index.html'), 'utf8');
-        let appshellHTML = indexHTML;
-        if (typeof this.readConfig('parseAppshell') === 'function') {
-          appshellHTML = this.readConfig('parseAppshell')(appshellHTML);
-        }
         fs.writeFileSync(path.join(distDir, 'manifest.appcache'), this.writeManifest(files));
-        fs.writeFileSync(path.join(distDir, 'appshell.html'), appshellHTML);
         fs.writeFileSync(path.join(distDir, 'index.html'), indexHTML.replace(/<html/i, `<html manifest="${rootURL()}manifest.appcache"`));
         if (context.distFiles) {
-          context.distFiles.push('manifest.appcache', 'appshell.html');
+          context.distFiles.push('manifest.appcache');
         }
       },
 
@@ -105,7 +100,7 @@ module.exports = {
         let loader = fs.readFileSync(require.resolve('loader.js'), 'utf8');
         let src = fs.readFileSync(path.join(__dirname, 'lib', 'bootloader.js'), 'utf8')
           .replace(/MODULE_PREFIX/g, modulePrefix())
-          .replace(/APPSHELL_PATH/g, assetsURL());
+          .replace(/APPSHELL_PATH/g, rootURL());
         return uglify.minify(loader + src, { fromString: true, mangle: true, compress: true }).code;
       }
     });
